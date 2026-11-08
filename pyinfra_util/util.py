@@ -4,9 +4,7 @@ from io import StringIO
 
 from pyinfra import host, logger
 from pyinfra.api import FactBase
-from pyinfra.facts.files import File
-from pyinfra.facts.server import Hostname
-from pyinfra.operations import apt, files, server, systemd
+from pyinfra.operations import apt, files, server
 
 
 def get_pass(filename: str, fail_ok=False) -> str:
@@ -18,7 +16,7 @@ def get_pass(filename: str, fail_ok=False) -> str:
             assert r.returncode == 0
 
     except FileNotFoundError:
-        print(f"Please install pass and pull the latest version of our pass secrets")
+        print("Please install pass and pull the latest version of our pass secrets")
         exit()
     except AssertionError:
         print(f"Pass failed: {r.stderr.decode('utf-8')}")
@@ -27,7 +25,13 @@ def get_pass(filename: str, fail_ok=False) -> str:
 
 
 def create_unix_user(
-    unix_user, unix_groups: [str] = [], enable_linger=True, ssh_keys=None, home=None, create_home=False, protect_home=False
+    unix_user,
+    unix_groups: [str] = [],
+    enable_linger=True,
+    ssh_keys=None,
+    home=None,
+    create_home=False,
+    protect_home=False,
 ):
     """Create a UNIX user for the bot, add it to a group if provided.
 
