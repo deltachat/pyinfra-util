@@ -4,6 +4,7 @@ from io import StringIO
 
 from pyinfra import host, logger
 from pyinfra.api import FactBase
+from pyinfra.facts.files import File
 from pyinfra.operations import apt, files, server
 
 
@@ -56,10 +57,11 @@ def create_unix_user(
     )
 
     if enable_linger:
-        server.shell(
-            name=f"enable {unix_user}'s systemd units to auto-start at boot",
-            commands=[f"loginctl enable-linger {unix_user}"],
-        )
+        if not host.get_fact(File, f"/var/lib/systemd/linger/{unix_user}"):
+            server.shell(
+                name=f"enable {unix_user}'s systemd units to auto-start at boot",
+                commands=[f"loginctl enable-linger {unix_user}"],
+            )
         files.line(
             name=f"{unix_user} .profile: ensure XDG_RUNTIME_DIR",
             path=f"{home}/.profile",
