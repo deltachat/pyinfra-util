@@ -60,6 +60,12 @@ def create_unix_user(
             name=f"enable {unix_user}'s systemd units to auto-start at boot",
             commands=[f"loginctl enable-linger {unix_user}"],
         )
+        files.file(
+            name="touch .profile",
+            path=f"{home}/.profile",
+            _su_user=unix_user,
+            _use_su_login=True,
+        )
         files.line(
             name=f"{unix_user} .profile: ensure XDG_RUNTIME_DIR",
             path=f"{home}/.profile",
